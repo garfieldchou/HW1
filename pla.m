@@ -27,7 +27,7 @@ for i = 1 : iter
 
 			if y(n) != y_pred
 				update++;
-				w = w + y(n)* X(n, :)' ;
+				w = w + 0.5 * y(n)* X(n, :)' ;
 				completed = 0;
 			else
 				completed += 1;			
