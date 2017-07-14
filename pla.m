@@ -7,12 +7,10 @@ w = zeros(size(X, 2), 1);
 
 completed = 0;
 update = 0;
-idx = 0;
+n = 1;
 
 while completed < m
 
-		n = mod(idx + completed, m)+ 1;
-	
 		if X(n, :)* w > 0
 			y_pred = 1;
 		else
@@ -20,13 +18,18 @@ while completed < m
 		end
 
 		if y(n) != y_pred
-			update += 1;
+			update++;
 			w = w + y(n)* X(n, :)' ;
-            idx += (completed + 1);
 			completed = 0;
-			continue;
+		else
+			completed += 1;			
 		end
-		completed += 1;
+		
+        if n == m
+        	n = 1;
+        else
+        	n++;
+        end
 	
 end
 fprintf('It took %d updates to complete PLA\r\n', update);
