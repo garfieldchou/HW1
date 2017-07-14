@@ -1,48 +1,58 @@
 clear
-data = dlmread('hw1_15_train.dat');
-m = size(data, 1);
+trainData = dlmread('hw1_18_train.dat');
+testData = dlmread('hw1_18_test.dat');
+m = size(trainData, 1);
 iter = 2000;
-total_updates = 0;
+total_testErr = 0;
+
+yt = testData(:, 5);
+Xt = [ones(size(yt), 1) , testData(:, [1: 4])];
 
 for i = 1 : iter
 
 	rand_indices = randperm(m);
-	data_i = data(rand_indices, :);
+	trainData_i = trainData(rand_indices, :);
 
-	y = data_i(:, 5);
-	X = [ones(m, 1) , data_i(:, [1: 4])];
+	y = trainData_i(:, 5);
+	X = [ones(m, 1) , trainData_i(:, [1: 4])];
 	w = zeros(size(X, 2), 1);
+    w_pkt = zeros(size(X, 2), 1);
 
-	completed = 0;
-	update = 0;
 	n = 1;
+    update = 0;
 
-	while completed < m
+	while update < 50
 
-			if X(n, :)* w > 0
-				y_pred = 1;
-			else
-				y_pred = -1;
+		y_pred = sign(X(n, :)* w);
+        % fprintf('y_pred = %f, y(n) = %f\r\n', y_pred, y(n));
+
+		if y(n) != y_pred
+			w = w + y(n)* X(n, :)';
+            % fprintf('w = [%f, %f, %f, %f, %f]\r\n', w');
+            % fprintf('w error = %f, w pocket error = %f\r\n', sum(sign(X * w) != y), sum(sign(X * w_pkt) != y));
+
+			if sum(sign(X * w) != y) < sum(sign(X * w_pkt) != y)
+				w_pkt = w;
 			end
-
-			if y(n) != y_pred
-				update++;
-				w = w + 0.5 * y(n)* X(n, :)' ;
-				completed = 0;
-			else
-				completed += 1;			
-			end
+            update++;
+		end
+        
+        % fprintf('w_pkt = [%f, %f, %f, %f, %f]\r\n\n', w_pkt');
 			
-	        if n == m
-	        	n = 1;
-	        else
-	        	n++;
-	        end
-		
+	    if n == m
+	       	n = 1;
+	    else
+	      	n++;
+	    end
+        
 	end
-	% fprintf('Iteration %d took %d updates to complete PLA\r\n', i, update);
-	total_updates += update;
+    
+    testErr = sum(sign(Xt * w_pkt) != yt);
+    total_testErr += testErr;
+
+	% err_rate = testErr / size(yt, 1);
+	% fprintf('error rate of %d iteration is %f \r\n', i, err_rate);
 
 end
 
-fprintf('It took %d updates in average for %d iterations to complete PLA\r\n', total_updates / iter, iter);
+fprintf('average error rate of %d iterations is %f \r\n', iter, total_testErr / (size(yt, 1) * iter));
