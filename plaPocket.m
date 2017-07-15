@@ -50,8 +50,9 @@ for i = 1 : iter
     testErr = sum(sign(Xt * w_pkt) != yt);
     total_testErr += testErr;
 
-	% err_rate = testErr / size(yt, 1);
-	% fprintf('error rate of %d iteration is %f \r\n', i, err_rate);
+	err_rate = testErr / size(yt, 1);
+	fprintf('error rate of %4d iteration is %f \r\n', i, err_rate);
+    fflush(stdout);
 
 end
 
