@@ -21,7 +21,7 @@ for i = 1 : iter
 	n = 1;
     update = 0;
 
-	while update < 50
+	while update < 100
 
 		y_pred = sign(X(n, :)* w);
         % fprintf('y_pred = %f, y(n) = %f\r\n', y_pred, y(n));
