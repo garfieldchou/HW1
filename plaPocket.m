@@ -16,7 +16,6 @@ for i = 1 : iter
 	y = trainData_i(:, 5);
 	X = [ones(m, 1) , trainData_i(:, [1: 4])];
 	w = zeros(size(X, 2), 1);
-    w_pkt = zeros(size(X, 2), 1);
 
 	n = 1;
     update = 0;
@@ -30,10 +29,6 @@ for i = 1 : iter
 			w = w + y(n)* X(n, :)';
             % fprintf('w = [%f, %f, %f, %f, %f]\r\n', w');
             % fprintf('w error = %f, w pocket error = %f\r\n', sum(sign(X * w) != y), sum(sign(X * w_pkt) != y));
-
-			if sum(sign(X * w) != y) < sum(sign(X * w_pkt) != y)
-				w_pkt = w;
-			end
             update++;
 		end
         
@@ -47,7 +42,7 @@ for i = 1 : iter
         
 	end
     
-    testErr = sum(sign(Xt * w_pkt) != yt);
+    testErr = sum(sign(Xt * w) != yt);
     total_testErr += testErr;
 
 	err_rate = testErr / size(yt, 1);
